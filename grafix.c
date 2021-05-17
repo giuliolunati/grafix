@@ -173,6 +173,7 @@ int main(int argc, char **args) {
       if (ARG_EQ("-h") || ARG_EQ("--help")) {
         help(args, *(++arg));
       }
+      else
       if (ARG_EQ("all")); // see odd, even
       else
       if (ARG_EQ("alpha")) add_channel(im(1), 0);

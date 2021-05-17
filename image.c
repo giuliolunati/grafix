@@ -59,7 +59,7 @@ void destroy_image(image *im) {
 void add_channel(image *im, int z) {
   if (im->chan[z]) return;
   gray *p= malloc(sizeof(gray) * im->width * im->height);
-  if (! p) error("ensure_chan: out of memory");
+  if (! p) error("add_channel: out of memory");
   im->chan[z]= p;
 }
 
@@ -100,12 +100,9 @@ char *read_next_token(FILE *file) {
   char *buf= malloc(16);
   unsigned long int p0, p1;
   while (1) {
-    p0= ftell(file);
     i= fscanf(file, " ");
-    if (p0 < (p1= ftell(file))) continue;
-    i= fscanf(file, "#");
-    if (p0 < (p1= ftell(file))) {
-      c= '#';
+    i= fscanf(file, "#%c", &c);
+    if (i > 0) {
       while (c != '\n') i= fscanf(file, "%c", &c);
       continue;
     }
