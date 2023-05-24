@@ -90,6 +90,7 @@ vector *histogram_of_image(image *im, int chan);
 void contrast_image(image *im, real black, real white);
 void mean_y(image *im, uint d);
 void darker_image(image *a, image *b);
+void lighter_image(image *a, image *b);
 void calc_statistics(image *im, int verbose);
 void diff_image(image *a, image *b);
 void patch_image(image *a, image *b);

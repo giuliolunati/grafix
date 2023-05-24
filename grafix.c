@@ -49,6 +49,7 @@ LIGHT, COLOR:\n\
   = dither STEP -------------------- dithering\n\
   = con* BLACK WHITE -------- enhance contrast\n\
   = darker FILENAMES... -- darker of all pixel\n\
+  = lighter FILENAMES...  lighter of all pixel\n\
 SELECT, DRAW:\n\
   = rect* VAL X Y X' Y' ----- select rectangle\n\
   = fill A R G B -------------- fill selection\n\
@@ -232,6 +233,8 @@ int main(int argc, char **args) {
           if (! *(++arg)) error("contrast: missing WHITE parameter");
           x= atof(*(arg-1));
           y= atof(*arg);
+          if (type(*(arg-1)) == 'd') x= x * 255;
+          if (type(*arg) == 'd') y= y * 255;
         }
         contrast_image(im(1), x, y);
       }
@@ -393,6 +396,16 @@ int main(int argc, char **args) {
       else
       if (ARG_HEAD("lapl")) {
         laplacian(im(1), -0.25);
+      }
+      else
+      if (ARG_EQ("lighter")) {
+        i= 1;
+        while (strchr(*(++arg), '.')) { // FILENAME.EXT
+          img= image_read(*arg);
+          if (i) { push(img); i= 0; }
+          else { darker_image(im(1), img); }
+        }
+        arg--;
       }
       else
       if (ARG_EQ("odd")) {

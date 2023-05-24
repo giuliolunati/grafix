@@ -193,6 +193,22 @@ void darker_image(image *a, image *b) {
   }
 }
 
+void lighter_image(image *a, image *b) {
+  int h= a->height;
+  int w= a->width;
+  int i,z;
+  gray *pa, *pb;
+  if (b->height != h || b->width != w) error("lighter_image: size mismatch.");
+  for (z=1; z < 4; z++) {
+    pa= a->chan[z]; pb= b->chan[z];
+    if (!pa || !pb) continue;
+    for (i= 0; i < w * h; i++) {
+      if (*pa < *pb) { *pa= *pb; };
+      pa++; pb++;
+    }
+  }
+}
+
 void calc_statistics(image *im, int verbose) {
   // threshold histogram
   vector *thr= make_vector(256);
