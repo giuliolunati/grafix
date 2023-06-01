@@ -195,8 +195,10 @@ int main(int argc, char **args) {
           }
           x= im(1)->graythr;
         }
-        else x= atof(*arg);
-        x > 1 || (x *= 255);
+        else {
+          x= atof(*arg);
+          if (type(*arg) == 'i') x /= 255.0;
+        }
         contrast_image(im(1), x, x);
       }
       else
@@ -233,8 +235,8 @@ int main(int argc, char **args) {
           if (! *(++arg)) error("contrast: missing WHITE parameter");
           x= atof(*(arg-1));
           y= atof(*arg);
-          if (type(*(arg-1)) == 'd') x= x * 255;
-          if (type(*arg) == 'd') y= y * 255;
+          if (type(*(arg-1)) == 'i') x /= 255.0;
+          if (type(*arg) == 'i') y /= 255.0;
         }
         contrast_image(im(1), x, y);
       }
@@ -339,8 +341,8 @@ int main(int argc, char **args) {
         for (i= 0; i < 4; i++) {
           arg++;
           if (! *arg) error("fill: missing parameter");
-          if (type(*arg) == 'i') t[i]= atoi(*arg);
-          else if (type(*arg) == 'd') t[i]= atof(*arg) * 255;
+          if (type(*arg) == 'i') t[i]= atoi(*arg) / 255.0;
+          else if (type(*arg) == 'd') t[i]= atof(*arg);
           else if (EQ(*arg, "-")) t[i]= NAN;
           else error("fill: wrong parameter");
         }
@@ -349,7 +351,7 @@ int main(int argc, char **args) {
       else
       if (ARG_EQ("fix-bg")) { // NUMBER
         arg++;
-        c= type(*arg); 
+        c= type(*arg);
         if (! c) error("fix-bg: missing parameter");
         if (c != 'i' && c != 'f') error("fix-bg: expected number");
         push(image_background(im(1), atof(*arg)));

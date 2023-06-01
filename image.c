@@ -3,6 +3,7 @@
 
 #define EQ(a, b) (0 == strcmp((a), (b)))
 
+
 //// IMAGES ////
 
 real default_ex= 25;
@@ -198,8 +199,7 @@ image *image_read_pnm(FILE *file) {
     ps= buf;
     for (x= 0; x < width; x++) {
       for (z= 0; z < depth; z++, ps++) {
-        *p[z]= *ps;
-        p[z]++;
+        *p[z]= *ps / 255.0; p[z]++;
       }
     }
   }
@@ -249,10 +249,8 @@ void image_write_pnm(image *im, FILE *file) {
     pt= buf;
     for (x= 0; x < width; x++) {
       for (z= 0; z < depth; z++, pt++) {
-        v= *p[z]; p[z]++;
-        if (v < 0) *pt= 0;
-        else if (v > 255) *pt= 255;
-        else *pt= v;
+        *pt= (uchar)round(*p[z] * 255);
+        p[z]++;
       }
     }
     if (width > fwrite(buf, depth, width, file)) error("Error writing file.");

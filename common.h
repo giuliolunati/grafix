@@ -67,7 +67,6 @@ void dither_cumulative(image *im, float step);
 
 // draw.c
 void draw_grid(image *im, int stepx, int stepy);
-void fill_selection(image *im, real v0, real v1, real v2, real v3);
 void poke_image(image *im, int x, int y, int chan, gray v);
 
 // image.c

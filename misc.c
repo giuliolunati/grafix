@@ -77,7 +77,7 @@ void divide_image(image *a, image *b) {
     pa= a->chan[z]; pb= b->chan[z];
     if (!pa || !pb) continue;
     for (i= 0; i < w * h; i++) {
-      *pa= (real)*pa / *pb * 255;
+      *pa= (real)*pa / *pb;
       pa++; pb++;
     }
   }
@@ -96,7 +96,7 @@ vector *histogram_of_image(image *im, int chan) {
       else
       if (v > 1) d[255] += 1;
       else
-      d[(int)v] += 1;
+      d[(int)round(v * 255)] += 1;
       p++;
     }
   }
@@ -114,13 +114,13 @@ void contrast_image(image *im, real black, real white) {
       if (!p) continue;
       for (i=0; i<l; i++,p++) {
         if (*p <= black) *p= 0;
-        else *p= 255;
+        else *p= 1;
       }
     }
     return;
   }
   //mw+q=M mb+q=-M m(w-b)=2M
-  m= 255.0 / (white - black) ;
+  m= 1.0 / (white - black) ;
   q= -m * black;
 
   if (black < white) {
@@ -129,7 +129,7 @@ void contrast_image(image *im, real black, real white) {
       if (!p) continue;
       for (i=0; i<l; i++,p++) {
         if (*p <= black) *p= 0;
-        else if (*p >= white) *p= 255;
+        else if (*p >= white) *p= 1;
         else *p= *p * m + q;
       }
     }
@@ -142,7 +142,7 @@ void contrast_image(image *im, real black, real white) {
       if (!p) continue;
       for (i=0; i<l; i++,p++) {
         if (*p >= black) *p= 0;
-        else if (*p <= white) *p= 255;
+        else if (*p <= white) *p= 1;
         else *p= *p * m + q;
       }
     }
