@@ -81,6 +81,8 @@ void poke_image(image *im, int x, int y, int chan, gray v);
 // image.c
 void error(const char *msg);
 void error1(const char *msg, const char *param);
+gray lin_from_srgb(uchar n);
+uchar srgb_from_lin(gray x);
 extern real default_ex;
 image *image_make(int depth, int width, int height);
 void destroy_image(image *im);

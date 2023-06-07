@@ -20,6 +20,25 @@ void error1(const char *msg, const char *param) {
   exit(1);
 }
 
+
+//// PIXELS ////
+
+gray lin_from_srgb(uchar n) {
+  gray x= n / 255.0;
+  if (x <= 0.04045) x= x / 12.92;
+  else x= pow( (x + 0.055) / 1.055, 2.4 );
+  return x;
+}
+
+uchar srgb_from_lin(gray x) {
+  if (x < 0) return 0;
+  if (x <= 0.0031308) x= x * 12.92;
+  else x= pow(x, 1/2.4) * (1.055) - 0.055;
+  if (x > 1) return 255;
+  return (int)round(x * 255);
+}
+
+
 //// IMAGES ////
 
 real default_ex= 25;
@@ -215,7 +234,7 @@ image *image_read_pnm(FILE *file) {
     ps= buf;
     for (x= 0; x < width; x++) {
       for (z= 0; z < depth; z++, ps++) {
-        *p[z]= *ps / 255.0; p[z]++;
+        *p[z]= lin_from_srgb(*ps); p[z]++;
       }
     }
   }
@@ -265,7 +284,7 @@ void image_write_pnm(image *im, FILE *file) {
     pt= buf;
     for (x= 0; x < width; x++) {
       for (z= 0; z < depth; z++, pt++) {
-        *pt= (uchar)round(*p[z] * 255);
+        *pt= srgb_from_lin(*p[z]);
         p[z]++;
       }
     }
