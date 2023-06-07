@@ -59,6 +59,15 @@ image *deconvolve_3x3(image *im, real a, real b, real c, real d, int steps, floa
 void laplacian(image *im, real k);
 void solve_poisson(image *guess, image *target, real k, int steps, float maxerr);
 
+// detect.c
+image *image_background(image *im, float d);
+vector *histogram_of_image(image *im, int chan);
+void mean_y(image *im, uint d);
+void darker_image(image *a, image *b);
+void lighter_image(image *a, image *b);
+void calc_statistics(image *im, int verbose);
+
+
 // dithering.c
 void quantize_image(image *im, float step);
 void dither_floyd_bidir(image *im, float step);
@@ -70,6 +79,8 @@ void draw_grid(image *im, int stepx, int stepy);
 void poke_image(image *im, int x, int y, int chan, gray v);
 
 // image.c
+void error(const char *msg);
+void error1(const char *msg, const char *param);
 extern real default_ex;
 image *image_make(int depth, int width, int height);
 void destroy_image(image *im);
@@ -80,17 +91,9 @@ void write_image(image *im, char *fname);
 void add_channel(image *im, int n);
 image *image_from_channel(image *im, int z);
 
-// misc.c
-void error(const char *msg);
-void error1(const char *msg, const char *param);
-image *image_background(image *im, float d);
+// pixel.c
 void divide_image(image *a, image *b);
-vector *histogram_of_image(image *im, int chan);
 void contrast_image(image *im, real black, real white);
-void mean_y(image *im, uint d);
-void darker_image(image *a, image *b);
-void lighter_image(image *a, image *b);
-void calc_statistics(image *im, int verbose);
 void diff_image(image *a, image *b);
 void patch_image(image *a, image *b);
 

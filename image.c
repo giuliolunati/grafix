@@ -4,6 +4,22 @@
 #define EQ(a, b) (0 == strcmp((a), (b)))
 
 
+//// ERRORS ////
+
+void error(const char *msg) {
+  fprintf(stderr, "ERROR: ");
+  fprintf(stderr, "%s", msg);
+  fprintf(stderr, "\n");
+  exit(1);
+}
+
+void error1(const char *msg, const char *param) {
+  fprintf(stderr, "ERROR: ");
+  fprintf(stderr, "%s %s", msg, param);
+  fprintf(stderr, "\n");
+  exit(1);
+}
+
 //// IMAGES ////
 
 real default_ex= 25;

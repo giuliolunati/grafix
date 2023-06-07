@@ -1,28 +1,12 @@
 #include "common.h"
 
-//// ERRORS ////
-
-void error(const char *msg) {
-  fprintf(stderr, "ERROR: ");
-  fprintf(stderr, "%s", msg);
-  fprintf(stderr, "\n");
-  exit(1);
-}
-
-void error1(const char *msg, const char *param) {
-  fprintf(stderr, "ERROR: ");
-  fprintf(stderr, "%s %s", msg, param);
-  fprintf(stderr, "\n");
-  exit(1);
-}
-
 image *image_background(image *im, float d) {
   d= 0.333 / d;
   d= exp(-d);
   int x, y, z, h= im->height, w= im->width;
   image *om= image_clone(im, 0, 0, 0);
   om->ex= im->ex;
-  real t, *v0, *v1;
+  gray t, *v0, *v1;
   v0= malloc(w * sizeof(*v0));
   v1= malloc(w * sizeof(*v1));
   gray *pi;
@@ -46,7 +30,7 @@ image *image_background(image *im, float d) {
         if (v1[x] < t) v1[x]= t;
       }
       for (x= 0; x < w; x++) {
-        *(po++)= round(v1[x]);
+        *(po++)= v1[x];
       }
       memcpy(v0, v1, w * sizeof(*v0));
     }
@@ -58,29 +42,13 @@ image *image_background(image *im, float d) {
         if (v1[x] < t) v1[x]= t;
       }
       for (x= 0; x < w; x++, po++) {
-        *(po)= round(v1[x]);
+        *(po)= v1[x];
       }
       memcpy(v0, v1, w * sizeof(*v0));
     }
   }
   free(v0); free(v1);
   return om;
-}
-
-void divide_image(image *a, image *b) {
-  int h= a->height;
-  int w= a->width;
-  int i, z;
-  gray *pa, *pb;
-  if (b->height != h || b->width != w) error("divide_image: size mismatch.");
-  for (z= 1; z < 4; z++) {
-    pa= a->chan[z]; pb= b->chan[z];
-    if (!pa || !pb) continue;
-    for (i= 0; i < w * h; i++) {
-      *pa= (real)*pa / *pb;
-      pa++; pb++;
-    }
-  }
 }
 
 vector *histogram_of_image(image *im, int chan) {
@@ -101,53 +69,6 @@ vector *histogram_of_image(image *im, int chan) {
     }
   }
   return hi;
-}
-
-void contrast_image(image *im, real black, real white) {
-  gray *p;
-  real m, q;
-  int z;
-  unsigned long int i, l= im->width * im->height;
-  if (white == black) {
-    for (z= 1; z < 4; z++) {
-      p= im->chan[z];
-      if (!p) continue;
-      for (i=0; i<l; i++,p++) {
-        if (*p <= black) *p= 0;
-        else *p= 1;
-      }
-    }
-    return;
-  }
-  //mw+q=M mb+q=-M m(w-b)=2M
-  m= 1.0 / (white - black) ;
-  q= -m * black;
-
-  if (black < white) {
-    for (z= 1; z < 4; z++) {
-      p= im->chan[z];
-      if (!p) continue;
-      for (i=0; i<l; i++,p++) {
-        if (*p <= black) *p= 0;
-        else if (*p >= white) *p= 1;
-        else *p= *p * m + q;
-      }
-    }
-    return;
-  }
-
-  else { // white < black
-    for (z= 1; z < 4; z++) {
-      p= im->chan[z];
-      if (!p) continue;
-      for (i=0; i<l; i++,p++) {
-        if (*p >= black) *p= 0;
-        else if (*p <= white) *p= 1;
-        else *p= *p * m + q;
-      }
-    }
-    return;
-  }
 }
 
 void mean_y(image *im, uint d) {
@@ -285,36 +206,5 @@ void calc_statistics(image *im, int verbose) {
   im->area= area;
 }
 
-void diff_image(image *a, image *b) {
-  int h= a->height;
-  int w= a->width;
-  int i, z;
-  gray *pa, *pb;
-  if (b->height != h || b->width != w) error("diff_image: size mismatch.");
-  for (z= 1; z < 4; z++) {
-    pa= a->chan[z]; pb= b->chan[z];
-    if (!pa || !pb) continue;
-    for (i= 0; i < w * h; i++) {
-      *pa= *pa - *pb + 128;
-      pa++; pb++;
-    }
-  }
-}
-
-void patch_image(image *a, image *b) {
-  int h= a->height;
-  int w= a->width;
-  int i, z;
-  gray *pa, *pb;
-  if (b->height != h || b->width != w) error("patch_image: size mismatch.");
-  for (z= 1; z < 4; z++) {
-    pa= a->chan[z]; pb= b->chan[z];
-    if (!pa || !pb) continue;
-    for (i= 0; i < w * h; i++) {
-      *pa= *pa + *pb - 128;
-      pa++; pb++;
-    }
-  }
-}
 
 // vim: sw=2 ts=2 sts=2 expandtab:

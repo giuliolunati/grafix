@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -O3
 LDFLAGS = -O3
-OBJS = vector.o image.o transform.o scale.o convolution.o misc.o draw.o select.o dithering.o poisson.o
+OBJS = vector.o image.o transform.o scale.o convolution.o pixel.o draw.o select.o dithering.o poisson.o detect.o
 
 grafix: grafix.c libgrafix.a common.h
 	$(CC) $(LDFLAGS) -o $@ $< libgrafix.a -lm 
