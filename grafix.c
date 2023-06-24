@@ -363,6 +363,11 @@ int main(int argc, char **args) {
     }
     else
     if (ARG_LT("r")) { // g* - q*
+      if (ARG_HEAD("gray")) {
+        push(image_luma(im(1)));
+        swap(); pop();
+      }
+      else
       if (ARG_EQ("grid")) {
         img= im(1);
         if (! *(++arg)) error("grid: missing STEP parameter");
@@ -445,6 +450,8 @@ int main(int argc, char **args) {
     }
     else
     if (ARG_LT("~~")) { // r* - ~*
+      if (ARG_EQ("rgb")) rgb_from_yuv_image(im(1));
+      else
       if (ARG_HEAD("rect")) { // VAL X0 Y0 X1 Y1
         img= im(1);
         for (i= 0; i < 5; i++) {
@@ -541,6 +548,8 @@ int main(int argc, char **args) {
           }
         }
       }
+      else
+      if (ARG_EQ("yuv")) yuv_from_rgb_image(im(1));
       else goto command_not_found;
     }
     else goto command_not_found;

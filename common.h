@@ -84,6 +84,7 @@ void error1(const char *msg, const char *param);
 gray lin_from_srgb(uchar n);
 uchar srgb_from_lin(gray x);
 extern real default_ex;
+int image_depth(image *im);
 image *image_make(int depth, int width, int height);
 void destroy_image(image *im);
 image *image_clone(image *im, int depth, int width, int height);
@@ -98,6 +99,9 @@ void divide_image(image *a, image *b);
 void contrast_image(image *im, real black, real white);
 void diff_image(image *a, image *b);
 void patch_image(image *a, image *b);
+void yuv_from_rgb_image(image *im);
+void rgb_from_yuv_image(image *im);
+image *image_luma(image *im);
 
 // scale.c
 image *image_double(image *im, real k /* hardness */);
