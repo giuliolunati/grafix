@@ -252,7 +252,7 @@ void sheary_image(image *im, real t) {
   int a, b, x, y;
   for (x= 0; x < w; x++) {
     dr= ((int)w/2 - (int)x) * t;
-    di[x]= floor(dr) * w;
+    di[x]= floor(dr) * w; // vertical offset = dr rows
     df[x]= dr - floor(dr);
   }
   for (z=0; z<5; z++) {
@@ -260,7 +260,7 @@ void sheary_image(image *im, real t) {
     end= im->chan[z] + (w * h);
     // down
     if (t > 0) {a= 0; b= w/2;}
-    else  {a= w/2; b= w;}
+    else  {a= w/2; b= w+1;}
     for (y= 0; y < h; y++) {
       p= im->chan[z] + (y * w) + a;
       for (x= a; x < b; x++, p++) {
@@ -269,7 +269,7 @@ void sheary_image(image *im, real t) {
         if (p + d + w < end) {
           buf[x]= *(p+d)*(1-f) + *(p+d+w)*f;
         } else {
-          buf[x]= *(p+d);
+          buf[x]= *(end-w+x);
         }
       }
       memcpy(
@@ -278,7 +278,7 @@ void sheary_image(image *im, real t) {
         (b - a) * sizeof(*buf)
       );
     }
-    if (t > 0) {a= w/2; b= w;}
+    if (t > 0) {a= w/2; b= w+1;}
     else  {a= 0; b= w/2;}
     // up
     for (y= h - 1; y >= 0; y--) { // y MUST be signed!
@@ -287,7 +287,6 @@ void sheary_image(image *im, real t) {
         d= di[x];
         f= df[x];
         if (p + d + w >= end) {
-          assert(d == 0);
           buf[x]= *p;
         }
         else
@@ -295,7 +294,7 @@ void sheary_image(image *im, real t) {
           buf[x]= *(p+d)*(1-f) + *(p+d+w)*f;
         }
         else {
-          buf[x]= *(p+d+w);
+          buf[x]= *(im->chan[z]+x);
         }
       }
       memcpy(
