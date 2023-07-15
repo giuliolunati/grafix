@@ -1,8 +1,9 @@
 #include "common.h"
 
-image *image_background(image *im, float d) {
-  d= 0.333 / d;
-  d= exp(-d);
+image *image_maxmin(image *im, float dx, float dy) {
+  float cx, cy;
+  if (dx!=0) cx= exp(-0.333/fabs(dx));
+  if (dy!=0) cy= exp(-0.333/fabs(dy));
   int x, y, z, h= im->height, w= im->width;
   image *om= image_clone(im, 0, 0, 0);
   om->ex= im->ex;
@@ -16,18 +17,42 @@ image *image_background(image *im, float d) {
     if (! pi) continue;
     po= om->chan[z];
     for (y= 0; y < h; y++) {
-      for (x= 0; x < w; x++) v1[x]= *(pi++);
-      for (x= 1; x < w; x++) {
-        t= v1[x - 1] * d;
-        if (v1[x] < t) v1[x]= t;
+      for (x= 0; x < w; x++) {
+        v1[x]= *(pi++);
       }
-      for (x= w - 2; x >= 0; x--) {
-        t= v1[x + 1] * d;
-        if (v1[x] < t) v1[x]= t;
+      if (dx>0) { // max
+        for (x= 1; x < w; x++) {
+          t= v1[x - 1] * cx;
+          if (v1[x] < t) v1[x]= t;
+        }
+        for (x= w - 2; x >= 0; x--) {
+          t= v1[x + 1] * cx;
+          if (v1[x] < t) v1[x]= t;
+        }
       }
-      if (y > 0) for (x= 0; x < w; x++) {
-        t= v0[x] * d;
-        if (v1[x] < t) v1[x]= t;
+      else
+      if (dx<0) { // min
+        for (x= 1; x < w; x++) {
+          t= (1 - v1[x-1]) * cx;
+          v1[x]= fmin(v1[x], 1-t);
+        }
+        for (x= w - 2; x >= 0; x--) {
+          t= (1 - v1[x+1]) * cx;
+          v1[x]= fmin(v1[x], 1-t);
+        }
+      }
+      if (dy > 0) {
+        for (x= 0; x < w; x++) {
+          t= v0[x] * cy;
+          if (v1[x] < t) v1[x]= t;
+        }
+      }
+      else
+      if (dy < 0) {
+        for (x= 0; x < w; x++) {
+          t= (1 - v0[x]) * cy;
+          v1[x]= fmin(v1[x], 1-t);
+        }
       }
       for (x= 0; x < w; x++) {
         *(po++)= v1[x];
@@ -37,9 +62,18 @@ image *image_background(image *im, float d) {
     for (y= 1; y < h; y++) {
       po -= w;
       for (x= w - 1; x >= 0; x--) v1[x]= *(--po);
-      for (x= 0; x < w; x++) {
-        t= v0[x] * d;
-        if (v1[x] < t) v1[x]= t;
+      if (dy>0) {
+        for (x= 0; x < w; x++) {
+          t= v0[x] * cy;
+          if (v1[x] < t) v1[x]= t;
+        }
+      }
+      else
+      if (dy<0) {
+        for (x= 0; x < w; x++) {
+          t= (1 - v0[x]) * cy;
+          v1[x]= fmin(v1[x], 1-t);
+        }
       }
       for (x= 0; x < w; x++, po++) {
         *(po)= v1[x];

@@ -42,8 +42,8 @@ SCALE, TRANSFORM:\n\
   ~ half ---------------------- half down size\n\
 LIGHT, COLOR:\n\
   - diff ---------------------- diff im2 - im1\n\
-  + bg ----------------------- find background\n\
-  = fix-bg -------------------- fix background\n\
+  + bg DX DY ----------------- find background\n\
+  = fixbg DX DY --------------- fix background\n\
   - div* -------------------- divide im2 / im1\n\
   = bin {auto | THRESHOLD} ---- to black&white\n\
   = dither STEP -------------------- dithering\n\
@@ -184,7 +184,13 @@ int main(int argc, char **args) {
         c= type(*arg); 
         if (! c) error("bg: missing parameter");
         if (c != 'i' && c != 'f') error("bg: expected number");
-        push(image_background(im(1), atof(*arg)));
+        x= atof(*arg);
+        arg++;
+        c= type(*arg); 
+        if (! c) error("bg: missing parameter");
+        if (c != 'i' && c != 'f') error("bg: expected number");
+        y= atof(*arg);
+        push(image_maxmin(im(1), x, y));
       }
       else
       if (ARG_EQ("bin")) { // auto | FLOAT
@@ -349,12 +355,18 @@ int main(int argc, char **args) {
         fill_selection(im(1),t[0],t[1],t[2],t[3]);
       }
       else
-      if (ARG_EQ("fix-bg")) { // NUMBER
+      if (ARG_EQ("fixbg")) { // NUMBER
         arg++;
-        c= type(*arg);
-        if (! c) error("fix-bg: missing parameter");
-        if (c != 'i' && c != 'f') error("fix-bg: expected number");
-        push(image_background(im(1), atof(*arg)));
+        c= type(*arg); 
+        if (! c) error("fixbg: missing parameter");
+        if (c != 'i' && c != 'f') error("bg: expected number");
+        x= atof(*arg);
+        arg++;
+        c= type(*arg); 
+        if (! c) error("fixbg: missing parameter");
+        if (c != 'i' && c != 'f') error("bg: expected number");
+        y= atof(*arg);
+        push(image_maxmin(im(1), x,y));
         divide_image(im(2), im(1));
         pop();
       }

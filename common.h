@@ -60,7 +60,7 @@ void laplacian(image *im, real k);
 void solve_poisson(image *guess, image *target, real k, int steps, float maxerr);
 
 // detect.c
-image *image_background(image *im, float d);
+image *image_maxmin(image *im, float dx, float dy);
 vector *histogram_of_image(image *im, int chan);
 void mean_y(image *im, uint d);
 void darker_image(image *a, image *b);
